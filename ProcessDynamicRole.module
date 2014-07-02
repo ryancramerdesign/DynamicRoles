@@ -11,6 +11,8 @@
 
 class ProcessDynamicRole extends ProcessPageType {
 
+	const minVersion = '2.4.6';
+
 	static public function getModuleInfo() {
 		return array(
 			'title' => __('Dynamic Roles', __FILE__), // getModuleInfo title
@@ -22,7 +24,7 @@ class ProcessDynamicRole extends ProcessPageType {
 				),
 			'icon' => 'bullhorn',
 			'installs' => 'DynamicRoleSupport',
-			'requires' => 'ProcessWire>=2.4.5', 
+			'requires' => 'ProcessWire>=' . self::minVersion, 
 			'group' => 'DynamicRoles', 
 			); 
 	}
@@ -76,8 +78,9 @@ class ProcessDynamicRole extends ProcessPageType {
 	}
 
 	public function ___install() {
-		if(version_compare(wire('config')->version, '2.4.5', '<')) {
-			throw new WireException('Dynamic Roles requires ProcessWire 2.4.5 (dev branch) or newer.'); 
+		// this is here in case someone attempts to install on a version before PW version dependency checking was added
+		if(version_compare(wire('config')->version, self::minVersion, '<')) {
+			throw new WireException('Dynamic Roles require ProcessWire ' . self::minVersion . ' or newer.'); 
 		}
 	}
 

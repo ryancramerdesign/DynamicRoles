@@ -1,6 +1,6 @@
 # Dynamic Roles for ProcessWire
 
-Dynamic Roles is a powerful access control tool for ProcessWire. 
+Dynamic Roles are a powerful access control tool for ProcessWire. 
 They pick up where traditional roles leave off, and allow you to assign 
 permissions at runtime based on any factor present with the user. 
 Once a user receives one or more dynamic roles (at runtime), those 
@@ -9,7 +9,7 @@ children to.
 
 If traditional roles are a sledgehammer, Dynamic Roles are a scalpel, 
 allowing nearly any finely tuned access control scenario. Traditional 
-ProcessWire rules are limited to assignment of view/edit/add access on 
+ProcessWire roles are limited to assignment of view/edit/add access on 
 a per-template basis. Dynamic roles go outside those limitations and 
 enable you to assign that access based on any factors present with a
 page (i.e. match any field values). 

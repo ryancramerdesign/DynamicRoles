@@ -11,7 +11,7 @@ class DynamicRole extends Role {
 	 *
 	 */
 	protected function getPredefinedTemplate() {
-		return $this->wire('templates')->get('dynamic-role'); 
+		return $this->wire('templates')->get(DynamicRoleSupport::templateName); 
 	}
 
 	/**
