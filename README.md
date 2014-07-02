@@ -22,6 +22,12 @@ access from at least the "guest" role at the template level. Then use
 Dynamic Roles to assign view access to those pages in a more granular 
 manner. 
 
+This module directly affects the results of all page getting/finding
+operations by applying the access control directly to the database
+queries before pages are loaded. As a result, it is fast (regardless
+of scale), pagination friendly, and requires no further intervention 
+by the developer other than configuring the dynamic roles as they see fit. 
+
 - Sponsored by Avoine
 - Concept by Antti Peisa
 - Code by Ryan Cramer   
