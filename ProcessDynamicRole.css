@@ -1,0 +1,11 @@
+#ProcessPageEdit .AdminDataTable a.selector-add,
+#ProcessPageEdit .selector-counter a {
+	font-weight: normal;
+}
+#ProcessPageEdit .InputfieldMultiplierItem {
+	border-bottom: 1px solid #333; 
+}
+#ProcessPageEdit .InputfieldMultiplierInput {
+	background: #fff;
+	padding: 1em; 
+}
