@@ -14,7 +14,7 @@ class DynamicRoleSupport extends WireData implements Module, ConfigurableModule 
 	static public function getModuleInfo() {
 		return array(
 			'title' => 'Dynamic Roles',
-			'version' => 1,
+			'version' => 2,
 			'summary' => 'Support module providing dynamic user roles for ProcessWire.',
 			'author' => 'Avoine and ProcessWire',
 			'autoload' => true,
@@ -687,7 +687,9 @@ class DynamicRoleSupport extends WireData implements Module, ConfigurableModule 
 		$droleUserSelector->label = 'Who is in this dynamic role?';
 		$droleUserSelector->type = $this->modules->get('FieldtypeSelector'); 
 		$droleUserSelector->flags = Field::flagSystem;
-		$droleUserSelector->initValue = "template=user";
+		$droleUserSelector->initValue = "template=user, include=all";
+		$droleUserSelector->allowSystemCustomFields = true; 
+		$droleUserSelector->allowSystemTemplates = true; 
 		$droleUserSelector->save();
 
 		$droleAddSelector = new Field();
