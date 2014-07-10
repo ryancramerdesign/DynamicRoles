@@ -11,19 +11,6 @@
 
 class DynamicRoleSupport extends WireData implements Module, ConfigurableModule {
 
-	static public function getModuleInfo() {
-		return array(
-			'title' => 'Dynamic Roles',
-			'version' => 2,
-			'summary' => 'Support module providing dynamic user roles for ProcessWire.',
-			'author' => 'Avoine and ProcessWire',
-			'autoload' => true,
-			'singular' => true,
-			'requires' => array('ProcessDynamicRole'), 
-			'group' => array('DynamicRoles'),
-			);
-	}
-
 	const apiVarName = 'droles';
 	const templateName = 'drole';
 	const fieldName = 'droles';

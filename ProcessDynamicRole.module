@@ -13,22 +13,6 @@ class ProcessDynamicRole extends ProcessPageType {
 
 	const minVersion = '2.4.6';
 
-	static public function getModuleInfo() {
-		return array(
-			'title' => __('Dynamic Roles', __FILE__), // getModuleInfo title
-			'version' => 1, 
-			'summary' => __('Dynamic roles manager.', __FILE__), // getModuleInfo summary 
-			'permission' => 'droles-admin', // add this permission if you want this Process available for roles other than Superuser
-			'permissions' => array(
-				'droles-admin' => 'Manage dynamic roles (recommended for superuser only)'
-				),
-			'icon' => 'bullhorn',
-			'installs' => 'DynamicRoleSupport',
-			'requires' => 'ProcessWire>=' . self::minVersion, 
-			'group' => 'DynamicRoles', 
-			); 
-	}
-
 	public function __construct() {
 		parent::__construct();
 		$this->set('showFields', array('name', 'permissions')); 

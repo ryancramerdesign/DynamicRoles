@@ -1,0 +1,14 @@
+{
+	"title": "Dynamic Roles (Main)",
+	"summary": "Dynamic Roles Manager.", 
+	"version": 2, 
+	"author": "Ryan Cramer and Antti Peisa", 
+	"icon": "bullhorn",
+	"installs": [ "DynamicRoleSupport" ],
+	"requires": [ "ProcessWire>=2.4.6" ],
+	"permission": "droles-admin",
+	"permanent": false, 
+	"permissions": {
+		"droles-admin": "Manage dynamic roles (recommended for superuser only)"
+	}
+}
