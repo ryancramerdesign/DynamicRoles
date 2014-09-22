@@ -601,6 +601,7 @@ class DynamicRoleSupport extends WireData implements Module, ConfigurableModule 
 
 			foreach($this->getPageValue($drole, $fieldName) as $selectorString) { 
 
+				if(!strlen(trim($selectorString))) continue; 
 				$selectors = new Selectors($selectorString); 
 				$finder = new PageFinder(); 
 				$ids = $finder->find($selectors, $pageFinderOptions); 

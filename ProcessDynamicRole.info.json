@@ -1,7 +1,7 @@
 {
 	"title": "Dynamic Roles (Main)",
 	"summary": "Dynamic Roles Manager.", 
-	"version": 2, 
+	"version": 3, 
 	"author": "Ryan Cramer and Antti Peisa", 
 	"icon": "bullhorn",
 	"installs": [ "DynamicRoleSupport" ],
@@ -10,5 +10,6 @@
 	"permanent": false, 
 	"permissions": {
 		"droles-admin": "Manage dynamic roles (recommended for superuser only)"
-	}
+	},
+	"useNavJSON": true
 }
