@@ -721,11 +721,11 @@ class DynamicRoleSupport extends WireData implements Module, ConfigurableModule 
 		$droleViewSelector->label = 'What can they view?';
 		$droleViewSelector->description = 'Create a selector that defines which pages are viewable by users in this dynamic role. Focus on pages that a user would not already have view access to (from their roles). This selector assigns new access but does not revoke existing access. For example, there is no reason for your selector here to match pages already viewable to guest users.' . $multiplierNote;
 		$droleViewSelector->showIf = "permissions=" . self::viewPermissionID; 
+		$droleViewSelector->flags = Field::flagSystem;
 		if($hasMultiplier) {
 			$droleViewSelector->type = $this->modules->get('FieldtypeMultiplier');
 			$droleViewSelector->fieldtypeClass = 'FieldtypeSelector';
 			$droleViewSelector->schemaClass = 'FieldtypeSelector';
-			$droleViewSelector->flags = Field::flagSystem;
 			$droleViewSelector->qtyMin = 1;
 			$droleViewSelector->qtyMax = 5;
 			$droleViewSelector->trashable = 0; 
