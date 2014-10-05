@@ -29,8 +29,13 @@ class ProcessDynamicRole extends ProcessPageType {
 	
 	public function hookInputfieldMultiplierRender($event) {
 		$f = $event->object;
+		$data = $this->wire('modules')->getModuleConfigData('DynamicRoleSupport'); 
+		$maxMultiplier = empty($data['maxMultiplier']) ? DynamicRoleSupport::maxMultiplier : (int) $data['maxMultiplier'];
+		$cnt = count($f->attr('value')); // if it already has more, make sure we don't lose them
+		if($cnt > $maxMultiplier) $maxMultiplier = $cnt;
+		$f->qtyMax = $maxMultiplier;
 		$f->wrapClass = 'InputfieldItemList';
-		$f->addLabel = $this->_('Add Section');
+		$f->addLabel = $this->_('Add OR Condition');
 	}
 	
 	public function hookInputfieldFormRender($event) {

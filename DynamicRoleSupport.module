@@ -29,6 +29,7 @@ class DynamicRoleSupport extends WireData implements Module, ConfigurableModule 
 	const viewPermissionID = 36; 
 	const debug = false; 
 	const debugLogName = 'dynamic-roles-debug';
+	const maxMultiplier = 3; 
 
 	/**
 	 * array of selector string => Selectors object
@@ -43,7 +44,10 @@ class DynamicRoleSupport extends WireData implements Module, ConfigurableModule 
 	 *
 	 */
 	public function __construct() {
+
 		$this->set('parent_id', 0); 
+		$this->set('maxMultiplier', self::maxMultiplier);
+
 		require(__DIR__ . "/DynamicRole.php"); 
 		require(__DIR__ . "/DynamicRoles.php"); 
 	}
@@ -63,16 +67,20 @@ class DynamicRoleSupport extends WireData implements Module, ConfigurableModule 
 
 		} catch(Exception $e) {
 			$this->error($e->getMessage()); 
+			$droles = array();
 		}
 
 		$user = $this->wire('user'); 
 
-		if(!$user->isSuperuser() && $user->isLoggedin() && count($droles)) {
-			$this->addHookAfter('User::hasPagePermission', $this, 'hookAfterUserHasPagePermission'); 
-			$this->addHookAfter('User::hasTemplatePermission', $this, 'hookAfterUserHasTemplatePermission'); 
-			$this->pages->addHook('found', $this, 'hookPagesFound'); 
-			$this->addHookAfter('PageFinder::getQuery', $this, 'hookAfterPageFinderGetQuery'); 
-			$this->addHookBefore('PageFinder::getQueryAllowedTemplatesWhere', $this, 'hookBeforePageFinderGetQueryAllowedTemplatesWhere'); 
+		if(count($droles) && $user->isLoggedin() && !$user->isSuperuser()) { 
+			$userDroles = $user->getUnformatted('droles'); 
+			if($userDroles && count($userDroles)) {
+				$this->addHookAfter('User::hasPagePermission', $this, 'hookAfterUserHasPagePermission'); 
+				$this->addHookAfter('User::hasTemplatePermission', $this, 'hookAfterUserHasTemplatePermission'); 
+				$this->pages->addHook('found', $this, 'hookPagesFound'); 
+				$this->addHookAfter('PageFinder::getQuery', $this, 'hookAfterPageFinderGetQuery'); 
+				$this->addHookBefore('PageFinder::getQueryAllowedTemplatesWhere', $this, 'hookBeforePageFinderGetQueryAllowedTemplatesWhere'); 
+			}
 		}
 
 		$this->pages->addHookAfter('saved', $this, 'hookPagesSaved'); 
@@ -403,6 +411,9 @@ class DynamicRoleSupport extends WireData implements Module, ConfigurableModule 
 	 */
 	public function hookAfterUserHasTemplatePermission(HookEvent $event) {
 
+		$has = $event->return; // if user already has the permission via traditional roles, we don't revoke it.
+		if($has) return; 
+
 		$name = $event->arguments(0);
 		$template = $event->arguments(1); 
 		$user = $this->wire('user');
@@ -656,7 +667,7 @@ class DynamicRoleSupport extends WireData implements Module, ConfigurableModule 
 		
 		$info = $this->wire('modules')->getModuleInfo($this); 
 		$hasMultiplier = $this->wire('modules')->isInstalled('InputfieldMultiplier'); 
-		$multiplierNote = $hasMultiplier ? ' Please note that each section below is considered an OR condition.' : '';
+		$multiplierNote = ''; // $hasMultiplier ? ' Please note that each section below is considered an OR condition.' : '';
 
 		// create the droles parent page
 		$drolesPage = new Page(); 
@@ -691,7 +702,7 @@ class DynamicRoleSupport extends WireData implements Module, ConfigurableModule 
 			$droleAddSelector->fieldtypeClass = 'FieldtypeSelector';
 			$droleAddSelector->schemaClass = 'FieldtypeSelector';
 			$droleAddSelector->qtyMin = 1;
-			$droleAddSelector->qtyMax = 5;
+			$droleAddSelector->qtyMax = self::maxMultiplier;
 			$droleAddSelector->trashable = 0; 
 		} else {
 			$droleAddSelector->type = $this->modules->get('FieldtypeSelector'); 
@@ -709,7 +720,7 @@ class DynamicRoleSupport extends WireData implements Module, ConfigurableModule 
 			$droleEditSelector->fieldtypeClass = 'FieldtypeSelector';
 			$droleEditSelector->schemaClass = 'FieldtypeSelector';
 			$droleEditSelector->qtyMin = 1; 
-			$droleEditSelector->qtyMax = 5; 
+			$droleEditSelector->qtyMax = self::maxMultiplier; 
 			$droleEditSelector->trashable = 0; 
 		} else {
 			$droleEditSelector->type = $this->modules->get('FieldtypeSelector'); 
@@ -727,7 +738,7 @@ class DynamicRoleSupport extends WireData implements Module, ConfigurableModule 
 			$droleViewSelector->fieldtypeClass = 'FieldtypeSelector';
 			$droleViewSelector->schemaClass = 'FieldtypeSelector';
 			$droleViewSelector->qtyMin = 1;
-			$droleViewSelector->qtyMax = 5;
+			$droleViewSelector->qtyMax = self::maxMultiplier;
 			$droleViewSelector->trashable = 0; 
 		} else {
 			$droleViewSelector->type = $this->modules->get('FieldtypeSelector'); 
@@ -844,7 +855,20 @@ class DynamicRoleSupport extends WireData implements Module, ConfigurableModule 
 	}
 
 	public static function getModuleConfigInputfields(array $data) {
-		return new InputfieldWrapper();
+		$form = new InputfieldWrapper();
+		if(wire('modules')->isInstalled('FieldtypeMultiplier')) {		
+			$field = wire('fields')->get(self::fieldNameEdit); 
+			if($field && $field->type == 'FieldtypeMultiplier') {
+				$f = wire('modules')->get('InputfieldInteger'); 
+				$f->attr('name', 'maxMultiplier'); 
+				$f->label = __('Multiplier quantity'); 
+				$f->description = __('We have detected that you have the Multiplier ProField installed! This enables you to maintain OR conditions (sections) for your selectors that define dynamic roles, giving them greater flexibility. However, it does consume some overhead (speed) when defining Dynamic Roles.') . ' '; // Multiplier description1
+				$f->description .= __('Specify the max number of OR conditions you want to allow, or 1 to disable. If you want to use this feature, we recommend starting small (like 2 or 3) and increasing it when/if your needs justify it.'); // Multiplier description2
+				$f->attr('value', isset($data['maxMultiplier']) ? (int) $data['maxMultiplier'] : self::maxMultiplier); 
+				$form->add($f); 
+			}
+		}
+		return $form; 
 	}
 
 	/**
