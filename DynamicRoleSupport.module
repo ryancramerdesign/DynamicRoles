@@ -93,7 +93,6 @@ class DynamicRoleSupport extends WireData implements Module, ConfigurableModule 
 	 *
 	 */
 	protected function populateToUser() {
-
 		$user = $this->wire('user'); 
 		if($user->isSuperuser()) return;
 		if(!$user->isLoggedin()) return;
@@ -686,7 +685,7 @@ class DynamicRoleSupport extends WireData implements Module, ConfigurableModule 
 		$droleUserSelector->label = 'Who is in this dynamic role?';
 		$droleUserSelector->type = $this->modules->get('FieldtypeSelector'); 
 		$droleUserSelector->flags = Field::flagSystem;
-		$droleUserSelector->initValue = "template=user, include=all";
+		$droleUserSelector->initValue = "pass!='', include=all";
 		$droleUserSelector->allowSystemCustomFields = true; 
 		$droleUserSelector->allowSystemTemplates = true; 
 		$droleUserSelector->save();

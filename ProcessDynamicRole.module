@@ -60,6 +60,9 @@ class ProcessDynamicRole extends ProcessPageType {
 			$value[] = DynamicRoleSupport::viewPermissionID;
 			$f->attr('value', $value);
 		}
+
+		$f = $form->getChildByName('drole_user_selector');
+		$f->previewColumns = array('path', 'template', 'modified');  
 	}
 	
 	public function hookProcessPageEditExecute($event) {
