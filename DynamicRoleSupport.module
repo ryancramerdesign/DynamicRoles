@@ -366,10 +366,11 @@ class DynamicRoleSupport extends WireData implements Module, ConfigurableModule 
 			// the following is only executed if the viewable/editable info was not joined from the DB query, 
 			// as would be the case for pages loaded before this module, or potentially others?
 			if(!$hasOnPage && count($strs)) {
-				// this is a backup condition is a backup that should not often be executed, and that's a good thing because
+				// this is a backup condition that should not often be executed, and that's a good thing because
 				// it performs new finds(), runs new queries...
 				if(is_object($strs)) $strs = $strs->getArray();
-				$hasOnPage = $this->wire('pages')->count("include=all, (" . implode('), (', $strs) . "), id=$page"); 
+				$selectorStr = "include=all, (" . implode('), (', $strs) . "), id=$page";
+				$hasOnPage = $this->wire('pages')->count($selectorStr); 
 				if($hasOnPage && $name == 'page-view') {
 					$page->setQuietly(self::viewableKey, true); 
 				} else if($hasOnPage && $name == 'page-add') { 
@@ -428,13 +429,18 @@ class DynamicRoleSupport extends WireData implements Module, ConfigurableModule 
 		if($name == 'page-create') {
 			// check that one of the templates specified in their edit fields matches the requested template
 			foreach($droles as $drole) {
-				foreach($this->getPageValue($drole, self::fieldNameEdit) as $selectorString) {
-					if(strpos($selectorString, 'template=') === false) continue; 
-					if(!preg_match('/\btemplate=([\d\|]+)\b/', $selectorString, $matches)) continue; 
-					$ids = explode('|', $matches[1]); 
-					if(in_array("$template->id", $ids)) {
-						$has = true; 
-						break;
+				$strs = $this->getPageValue($drole, self::fieldNameEdit);
+				foreach($strs as $selectorString) {
+					if(strpos($selectorString, 'template=') !== false) {
+						// edit selector mentions templates
+						if(!preg_match('/\btemplate=([\d\|]+)\b/', $selectorString, $matches)) continue; 
+						$ids = explode('|', $matches[1]); 
+						if(in_array("$template->id", $ids)) {
+							$has = true; 
+							break;
+						}
+					} else {
+						// edit selector does not mention templates
 					}
 				}
 			}
@@ -693,7 +699,9 @@ class DynamicRoleSupport extends WireData implements Module, ConfigurableModule 
 		$droleAddSelector = new Field();
 		$droleAddSelector->name = self::fieldNameAdd; 
 		$droleAddSelector->label = 'Where can they add new pages?';
-		$droleAddSelector->description = 'Create a selector that matches the parent pages where users in this dynamic role will be able to create new children. If the dynamic role is not allowed to create new pages then leave it blank.' . $multiplierNote;
+		$droleAddSelector->description = 'Create a selector that matches the parent pages where users in this dynamic role will be able to create new children. If the dynamic role is not allowed to create new pages then leave it blank. ';
+		$droleAddSelector->description .= 'Note that your "what can they edit" selector above must include mention of one or more templates before a user can create new pages. ';
+		$droleAddSelector->description .= $multiplierNote;
 		$droleAddSelector->flags = Field::flagSystem;
 		$droleAddSelector->showIf = "permissions=" . self::editPermissionID; 
 		if($hasMultiplier) { 
@@ -711,7 +719,9 @@ class DynamicRoleSupport extends WireData implements Module, ConfigurableModule 
 		$droleEditSelector = new Field();
 		$droleEditSelector->name = self::fieldNameEdit; 
 		$droleEditSelector->label = 'What can they edit?';
-		$droleEditSelector->description = 'Create a selector that defines which pages are editable by users in this dynamic role. This may include any pages a user has view access to, whether those you defined above or those already viewable without dynamic roles. Focus on pages that would not already be editable to a user (via their traditional roles). This selector assigns new access but does not revoke existing access.' . $multiplierNote;
+		$droleEditSelector->description = 'Create a selector that defines which pages are editable by users in this dynamic role. This may include any pages a user has view access to, whether those you defined above or those already viewable without dynamic roles. Focus on pages that would not already be editable to a user (via their traditional roles). This selector assigns new access but does not revoke existing access. '; 
+		$droleEditSelector->description .= 'If you intend for users to be able to create pages as well, please make sure your selector includes mention of one or more templates. ';
+		$droleEditSelector .= $multiplierNote;
 		$droleEditSelector->flags = Field::flagSystem;
 		$droleEditSelector->showIf = "permissions=" . self::editPermissionID; 
 		if($hasMultiplier) { 
