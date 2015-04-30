@@ -721,7 +721,7 @@ class DynamicRoleSupport extends WireData implements Module, ConfigurableModule 
 		$droleEditSelector->label = 'What can they edit?';
 		$droleEditSelector->description = 'Create a selector that defines which pages are editable by users in this dynamic role. This may include any pages a user has view access to, whether those you defined above or those already viewable without dynamic roles. Focus on pages that would not already be editable to a user (via their traditional roles). This selector assigns new access but does not revoke existing access. '; 
 		$droleEditSelector->description .= 'If you intend for users to be able to create pages as well, please make sure your selector includes mention of one or more templates. ';
-		$droleEditSelector .= $multiplierNote;
+		$droleEditSelector->description .= $multiplierNote;
 		$droleEditSelector->flags = Field::flagSystem;
 		$droleEditSelector->showIf = "permissions=" . self::editPermissionID; 
 		if($hasMultiplier) { 

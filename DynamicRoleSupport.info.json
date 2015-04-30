@@ -1,7 +1,7 @@
 {
 	"title": "Dynamic Roles",
 	"summary": "Support module providing dynamic user roles for ProcessWire.", 
-	"version": 5, 
+	"version": 6, 
 	"author": "Ryan Cramer and Antti Peisa", 
 	"autoload": true,
 	"singular": true
