@@ -521,10 +521,14 @@ class DynamicRoleSupport extends WireData implements Module, ConfigurableModule 
 			$query = $this->wire('database')->prepare($sql); 
 			$query->bindValue(':id', $page->id);
 			$query->execute();
-		}
+		} 
+		
+		// We're not interested in any process related permissions
+		$tempProcess = $page->process;
+		$page->process = null;
 
-		$guest = $this->wire('users')->get('guest'); 
-		$guestViewable = $page->viewable($guest); 
+		$guest = $this->wire('users')->get('guest');
+		$guestViewable = $page->viewable($guest);
 
 		foreach($this->wire('droles') as $drole) {
 
@@ -564,7 +568,10 @@ class DynamicRoleSupport extends WireData implements Module, ConfigurableModule 
 						break;
 					}
 				}
-			}
+			} 
+			
+			// Reset nullified process for page
+			$page->process = $tempProcess;
 
 			// if something is editable, it must also be viewable
 			if(($editable || $addable) && !$viewable) $viewable = true; 
