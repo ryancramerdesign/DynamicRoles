@@ -61,7 +61,11 @@ class DynamicRoleSupport extends WireData implements Module, ConfigurableModule 
 		try {
 			$template = $this->templates->get(self::templateName); 
 			if(!$template) throw new WireException("Unable to find template: " . self::templateName); 
-			$droles = new DynamicRoles($template, $this->parent_id); 
+			if(version_compare($this->wire('config')->version, '2.8.0') >= 0) {
+				$droles = new DynamicRoles($this->wire(), $template, $this->parent_id);
+			} else {
+				$droles = new DynamicRoles($template, $this->parent_id);
+			}
 			$this->wire(self::apiVarName, $droles); // API variable
 			$this->populateToUser();
 

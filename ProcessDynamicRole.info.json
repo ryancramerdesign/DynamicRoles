@@ -1,7 +1,7 @@
 {
 	"title": "Dynamic Roles (Main)",
 	"summary": "Dynamic Roles Manager.", 
-	"version": 5, 
+	"version":6, 
 	"author": "Ryan Cramer and Antti Peisa", 
 	"icon": "bullhorn",
 	"installs": [ "DynamicRoleSupport" ],
