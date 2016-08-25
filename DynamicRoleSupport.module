@@ -553,8 +553,9 @@ class DynamicRoleSupport extends WireData implements Module, ConfigurableModule 
 						$editable = true;
 						$this->message("Editable to dynamic role: $drole->name", Notice::debug); 
 						break;
-					} else if($this->wire('user')->id == $page->modified_users_id) {
+					} else if(!$this->wire('user')->isSuperuser() && $this->wire('user')->id == $page->modified_users_id) {
 						// if user last modified the page, let them continue editing even if it doesn't yet match
+						// exclude superusers as their saves would make the page auto visible / editable to all droles which can edit something
 						$editable = true;
 						break;
 					}
